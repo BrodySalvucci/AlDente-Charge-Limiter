@@ -8,6 +8,7 @@
 
 import Foundation
 import ServiceManagement
+import BatteryHealthKit
 import IOKit.pwr_mgt
 
 protocol HelperDelegate {
@@ -213,15 +214,15 @@ final class Helper {
     }
 
     @objc func writeMaxBatteryCharge(setVal: UInt8) {
-        SMCWriteByte(key: "BCLM", value: setVal)
+        let manager = BHKManager()
+        manager.setChargingLimit(UInt(setVal))
 
     }
 
     @objc func readMaxBatteryCharge() {
-        SMCReadByte(key: "BCLM") { value in
-            print("OLD KEY MAX CHARGE: "+String(value))
-            self.delegate?.OnMaxBatRead(value: value)
-        }
+        let manager = BHKManager()
+        let val = UInt8(manager.currentChargingLimit())
+        self.delegate?.OnMaxBatRead(value: val)
     }
     
     @objc func enableCharging(enabled: Bool) {

@@ -129,10 +129,10 @@ public extension FourCharCode {
 }
 
 //------------------------------------------------------------------------------
-// MARK: Defined by AppleSMC.kext
+// MARK: Defined by AppleSMC2 DriverKit extension
 //------------------------------------------------------------------------------
 
-/// Defined by AppleSMC.kext
+/// Defined by AppleSMC2 DriverKit extension
 ///
 /// This is the predefined struct that must be passed to communicate with the
 /// AppleSMC driver. While the driver is closed source, the definition of this
@@ -148,15 +148,15 @@ public extension FourCharCode {
 /// * C array's are bridged as tuples
 ///
 /// http://www.opensource.apple.com/source/PowerManagement/PowerManagement-211/
-public struct SMCParamStruct {
+public struct SMCKeyData_t {
 
     /// I/O Kit function selector
     public enum Selector: UInt8 {
         case kSMCHandleYPCEvent  = 2
-        case kSMCReadKey         = 5
-        case kSMCWriteKey        = 6
-        case kSMCGetKeyFromIndex = 8
-        case kSMCGetKeyInfo      = 9
+        case kSMCReadKey         = 0x10
+        case kSMCWriteKey        = 0x11
+        case kSMCGetKeyFromIndex = 0x12
+        case kSMCGetKeyInfo      = 0x13
     }
 
     /// Return codes for SMCParamStruct.result property
@@ -214,7 +214,7 @@ public struct SMCParamStruct {
     /// Method selector
     var data8: UInt8 = 0
 
-    var data32: UInt32 = 0
+    var data64: UInt64 = 0
 
     /// Data returned from the SMC
     var bytes: SMCBytes = (UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0),
@@ -224,6 +224,8 @@ public struct SMCParamStruct {
                            UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0), UInt8(0),
                            UInt8(0), UInt8(0))
 }
+
+public typealias SMCParamStruct = SMCKeyData_t
 
 //------------------------------------------------------------------------------
 // MARK: SMC Client
@@ -264,7 +266,7 @@ public func ==(lhs: DataType, rhs: DataType) -> Bool {
 }
 
 /// Apple System Management Controller (SMC) user-space client for Intel-based
-/// Macs. Works by talking to the AppleSMC.kext (kernel extension), the closed
+/// Macs. Works by talking to the AppleSMC2 DriverKit extension, the closed
 /// source driver for the SMC.
 public struct SMCKit {
 
@@ -299,7 +301,7 @@ public struct SMCKit {
     /// other calls
     public static func open() throws {
         let service = IOServiceGetMatchingService(kIOMasterPortDefault,
-                                                  IOServiceMatching("AppleSMC"))
+                                                  IOServiceMatching("AppleSMC2"))
 
         if service == 0 { throw SMCError.driverNotFound }
 
@@ -377,8 +379,8 @@ public struct SMCKit {
     public static func callDriver(_ inputStruct: inout SMCParamStruct,
                         selector: SMCParamStruct.Selector = .kSMCHandleYPCEvent)
                                                       throws -> SMCParamStruct {
-        os_log("SMCPARAMSTRUCT SIZE: %d", MemoryLayout<SMCParamStruct>.stride)
-        assert(MemoryLayout<SMCParamStruct>.stride == 80, "SMCParamStruct size is != 80")
+        os_log("SMCKeyData_t SIZE: %d", MemoryLayout<SMCParamStruct>.stride)
+        assert(MemoryLayout<SMCParamStruct>.stride == 96, "SMCKeyData_t size is != 96")
 
         var outputStruct = SMCParamStruct()
         let inputStructSize = MemoryLayout<SMCParamStruct>.stride
@@ -671,7 +673,7 @@ extension SMCKit {
         let data = try readData(key)
 
         // The last 12 bytes of '{fds' data type, a custom struct defined by the
-        // AppleSMC.kext that is 16 bytes, contains the fan name
+        // AppleSMC2 driver that is 16 bytes, contains the fan name
         let c1  = String(UnicodeScalar(data.4))
         let c2  = String(UnicodeScalar(data.5))
         let c3  = String(UnicodeScalar(data.6))

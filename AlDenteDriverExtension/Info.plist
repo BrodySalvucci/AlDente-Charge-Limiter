@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleIdentifier</key>
+    <string>com.davidwernhart.AlDenteDriver</string>
+    <key>CFBundleExecutable</key>
+    <string>AlDenteDriver</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundlePackageType</key>
+    <string>XDRV</string>
+    <key>IOKitPersonalities</key>
+    <dict>
+        <key>AlDenteDriver</key>
+        <dict>
+            <key>CFBundleIdentifier</key>
+            <string>com.davidwernhart.AlDenteDriver</string>
+            <key>IOClass</key>
+            <string>AlDenteDriver</string>
+            <key>IOProviderClass</key>
+            <string>IOResources</string>
+            <key>IOResourceMatch</key>
+            <string>IOBSD</string>
+        </dict>
+    </dict>
+    <key>OSBundleLibraries</key>
+    <dict>
+        <key>com.apple.DriverKit.AppleSMC2</key>
+        <string>1.0</string>
+    </dict>
+</dict>
+</plist>

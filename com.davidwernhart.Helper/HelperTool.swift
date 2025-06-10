@@ -8,6 +8,7 @@
 
 import Foundation
 import IOKit.pwr_mgt
+import BatteryHealthKit
 
 final class HelperTool: NSObject, HelperToolProtocol {
     

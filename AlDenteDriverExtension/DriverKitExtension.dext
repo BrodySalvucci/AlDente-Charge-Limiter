@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package>
+    <bundleIdentifier>com.davidwernhart.AlDenteDriver</bundleIdentifier>
+    <payload>
+        <bundle path="AlDenteDriver.dext"/>
+    </payload>
+</package>
